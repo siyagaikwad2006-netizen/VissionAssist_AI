@@ -1,0 +1,41 @@
+name: Build VisionAssist APK
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Build Android APK
+        run: |
+          if [ -d "vision_assist_app" ]; then
+            cd vision_assist_app
+          fi
+          flutter pub get
+          flutter build apk --release
+
+      - name: Upload Compiled APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: VisionAssist_AI_Updated_APK
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            vision_assist_app/build/app/outputs/flutter-apk/app-release.apk
+
